@@ -76,7 +76,7 @@ class _TelaContas extends State<TelaContas> {
     }
   }
 
-  _exluirConta(int id) async{
+  _excluirConta(int id) async{
     Database bd = await _recuperarBancoDadosContas();
     int retorno = await bd.delete(
         "contas",
@@ -250,7 +250,10 @@ class _TelaContas extends State<TelaContas> {
                                             style: TextStyle(fontSize: 16))
                                       ),
                                       TextButton(
-                                          onPressed: (){},
+                                          onPressed: (){
+                                              _salvarDadosConta(nome_conta, valor_conta, data_validade);
+                                              _criarLinha(nome_conta, valor_conta, data_validade);
+                                          },
                                           style: TextButton.styleFrom(
                                             primary: Colors.orangeAccent[200],
                                           ),
