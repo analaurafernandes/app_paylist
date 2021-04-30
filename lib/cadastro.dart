@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'utilitarios.dart';
-import 'package:sqflite/sqflite.dart';
 
 class TelaCadastro extends StatefulWidget {
   @override

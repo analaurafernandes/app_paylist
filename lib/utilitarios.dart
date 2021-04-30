@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'contas.dart';
 
 botaoGenerico(texto, BuildContext context, rota){
   return ElevatedButton(
@@ -42,26 +43,6 @@ botaoSalvarBancoUsuario(texto, BuildContext context, Map dadosUsuario){
         _salvarDadosUsuario(dadosUsuario['email'], dadosUsuario['login'], dadosUsuario['senha']);
         _listarUsuarios();
         Navigator.pushNamed(context, '/login');
-      }
-  );
-}
-
-botaoSalvarBancoContas(texto, BuildContext context, Map dadosConta){
-  return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-          shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(30.0),
-          ),
-          minimumSize: Size(150, 5),
-          primary: Colors.orangeAccent[200],
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          textStyle: TextStyle(
-              fontSize: 18,
-              color: Colors.black
-          )),
-      child: Text(texto),
-      onPressed: () {
-         _salvarDadosUsuario(dadosConta['nome'], dadosConta['valor'], dadosConta['data_validade']);
       }
   );
 }
@@ -178,66 +159,10 @@ _atualizarUsuario(int id, Map dadosUsuario) async{
   );
   print("Usuario atualizado: " + retorno.toString());
 }
-/*-----------------------------------MANIPULACAO DE CONTAS--------------------------------------*/
-_recuperarBancoDadosContas() async{
-  final caminhoBD = await getDatabasesPath();
-  final localBD   = join(caminhoBD, "banco.bd");
-  var bd = await openDatabase(
-      localBD,
-      version: 1,
-      onCreate: (db, dbVersaoRecente){
-        String sql = "create table contas(id integer primary key autoincrement, nome varchar, valor real, data_validade varchar)";
-        db.execute(sql);
-      }
-  );
-  return bd;
-}
 
-_salvarDadosConta(String nome, double valor, String data_validade) async{
-  Database bd = await _recuperarBancoDadosContas();
-  Map<String, dynamic> dadosConta = {
-    "nome" : nome,
-    "valor": valor,
-    "data_validade": data_validade
-  };
-  int id = await bd.insert("contas", dadosConta);
-  print("Id salvo: $id");
-}
-
-_listarContas() async{
-  Database bd = await _recuperarBancoDadosContas();
-  String sql = "select * from contas";
-  List contas = await bd.rawQuery(sql);
-  for(var conta in contas){
-    print("\t id: " + conta['id'].toString() +
-        "\n nome: " + conta['nome'] +
-        "\n valor: " + conta['valor'] +
-        "\n data_validade: " + conta['data_validade']);
-  }
-}
-
-_exluirConta(int id) async{
-  Database bd = await _recuperarBancoDadosContas();
-  int retorno = await bd.delete(
-      "contas",
-      where: "id = ?",
-      whereArgs: [id]
-  );
-  print("Contas excluidas:" + retorno.toString());
-}
-
-_atualizarContas(int id, Map dadosConta) async{
-  Database bd = await _recuperarBancoDadosContas();
-  int retorno = await bd.update(
-      "contas", dadosConta,
-      where: "id = ?",
-      whereArgs: [id]
-  );
-  print("Conta atualizada: " + retorno.toString());
-}
 
 /*----------------------------TABELA DE CONTAS--------------------------*/
-criaTabelaContas() {
+/*_criaTabelaContas() {
   return Table(
     defaultColumnWidth: FixedColumnWidth(150.0),
     border: TableBorder(
@@ -259,8 +184,8 @@ criaTabelaContas() {
       _criarLinhaTable("17, Flamento, 6"),
     ],
   );
-}
-_criarLinhaTable(String listaNomes) {
+}*/
+/*_criarLinhaTable(String listaNomes) {
   return TableRow(
     children: listaNomes.split(',').map((name) {
       return Container(
@@ -273,4 +198,5 @@ _criarLinhaTable(String listaNomes) {
       );
     }).toList(),
   );
-}
+}*/
+
