@@ -12,13 +12,18 @@ class _TelaContas extends State<TelaContas> {
   var valor_conta;
   var data_validade;
   final _formKey = GlobalKey<FormState>();
-
+  var selecionada = false;
   List<DataRow> _rowList = [
     DataRow(cells: <DataCell>[
-      DataCell(Text('AAAAAA')),
-      DataCell(Text('1')),
-      DataCell(Text('Yes'))
-    ]),
+      DataCell(Text('CEMIG')),
+      DataCell(Text('R\$100,00')),
+      DataCell(Text('30/04/2021'))
+    ],
+      selected: true,
+      onSelectChanged: (select) {
+        print("Selecionada!");
+
+      },),
   ];
 
   void _criarLinha(String conta, String valor, String data){
