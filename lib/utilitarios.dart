@@ -86,8 +86,8 @@ botaoVerificaPermissao(texto, BuildContext context, Map dadosUsuario){
             context:  context,
             builder:  (BuildContext context) {
               return AlertDialog(
-                  title: new Text("Alert Dialog titulo"),
-                  content: new Text("Alert Dialog body"),
+                  title: new Text("Não foi possível realizar o login."),
+                  content: new Text("Login ou senha inválida!"),
                   actions: <Widget>[
                   // define os botões na base do dialogo
                   new TextButton(
@@ -234,4 +234,43 @@ _atualizarContas(int id, Map dadosConta) async{
       whereArgs: [id]
   );
   print("Conta atualizada: " + retorno.toString());
+}
+
+/*----------------------------TABELA DE CONTAS--------------------------*/
+criaTabelaContas() {
+  return Table(
+    defaultColumnWidth: FixedColumnWidth(150.0),
+    border: TableBorder(
+      horizontalInside: BorderSide(
+        color: Colors.black,
+        style: BorderStyle.solid,
+        width: 1.0,
+      ),
+      verticalInside: BorderSide(
+        color: Colors.black,
+        style: BorderStyle.solid,
+        width: 1.0,
+      ),
+    ),
+    children: [
+      _criarLinhaTable("Pontos, Time, Gols"),
+      _criarLinhaTable("25, Palmeiras,16 "),
+      _criarLinhaTable("20, Santos, 5"),
+      _criarLinhaTable("17, Flamento, 6"),
+    ],
+  );
+}
+_criarLinhaTable(String listaNomes) {
+  return TableRow(
+    children: listaNomes.split(',').map((name) {
+      return Container(
+        alignment: Alignment.center,
+        child: Text(
+          name,
+          style: TextStyle(fontSize: 20.0),
+        ),
+        padding: EdgeInsets.all(8.0),
+      );
+    }).toList(),
+  );
 }
