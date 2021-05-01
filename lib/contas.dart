@@ -6,13 +6,13 @@ class Conta {
   String nome;
   String validade;
   double valor;
-  int id = -1;
+  int id;
 
-  Conta(String nome, String validade, double valor){
+  Conta(String nome, String validade, double valor, int id){
     this.nome = nome;
     this.validade = validade;
     this.valor = valor;
-    this.id = id + 1;
+    this.id = id;
   }
 }
 
@@ -29,13 +29,14 @@ class _TelaContas extends State<TelaContas> {
   var selecionada = false;
 
   List<Conta> _listSelected = [];
-  List<Conta> _listaContas = [new Conta('Cemig', '10/05/2021', 400.00)];
+  List<Conta> _listaContas = [new Conta('Cemig', '10/05/2021', 400.00, -1)];
   //_listaContas.add(inicial);
-  void _criarLinha(String conta, double valor, String data){
+  void _criarLinha (String conta, double valor, String data) async{
+    var id = await _salvarDadosConta(conta, valor, data);
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below.
-      Conta nova = new Conta(conta, data, valor);
+      Conta nova = new Conta(conta, data, valor, id);
       _listaContas.add(nova);
       /*_rowList.add(DataRow(cells: <DataCell>[
         DataCell(Text(conta)),
@@ -62,6 +63,7 @@ class _TelaContas extends State<TelaContas> {
       else
         _listSelected.remove(conta);
     });
+    print(_listSelected);
   }
 
   void _deletarLinha() async{
@@ -72,6 +74,7 @@ class _TelaContas extends State<TelaContas> {
         for (Conta conta in temp) {
           _listaContas.remove(conta);
           _listSelected.remove(conta);
+          _excluirConta(conta.id);
         }
       }
     });
@@ -104,6 +107,7 @@ class _TelaContas extends State<TelaContas> {
     int id = await bd.insert("contas", dadosConta);
     await _listarContas();
     print("Id salvo: $id");
+    return id;
   }
 
   _listarContas() async{
@@ -293,8 +297,7 @@ class _TelaContas extends State<TelaContas> {
                                       ),
                                       TextButton(
                                           onPressed: () async{
-                                              await _salvarDadosConta(nome_conta, valor_conta, data_validade);
-                                              _criarLinha(nome_conta, valor_conta, data_validade);
+                                              await _criarLinha(nome_conta, valor_conta, data_validade);
                                               Navigator.pop(context);
                                           },
                                           style: TextButton.styleFrom(
@@ -344,7 +347,7 @@ class _TelaContas extends State<TelaContas> {
                                 (conta) => DataRow(
                                   selected: _listSelected.contains(conta),
                                   onSelectChanged: (b){
-                                    print("Selecionado!");
+                                    print("Selecionado! id:" + conta.id.toString());
                                     onSelect(b, conta);
                                   },
                                   cells: [
