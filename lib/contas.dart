@@ -41,7 +41,7 @@ class _TelaContas extends State<TelaContas> {
   /*-----------------------------------MANIPULACAO DE CONTAS--------------------------------------*/
   _recuperarBancoDadosContas() async{
     final caminhoBD = await getDatabasesPath();
-    final localBD   = join(caminhoBD, "banco.bd");
+    final localBD   = join(caminhoBD, "banco2.bd");
     var bd = await openDatabase(
         localBD,
         version: 1,
@@ -55,12 +55,15 @@ class _TelaContas extends State<TelaContas> {
 
   _salvarDadosConta(String nome, double valor, String data_validade) async{
     Database bd = await _recuperarBancoDadosContas();
+    print("ABRI O BANCO DE DADOS CONTA");
     Map<String, dynamic> dadosConta = {
       "nome" : nome,
       "valor": valor,
       "data_validade": data_validade
     };
+    print(dadosConta);
     int id = await bd.insert("contas", dadosConta);
+    await _listarContas();
     print("Id salvo: $id");
   }
 
@@ -71,7 +74,7 @@ class _TelaContas extends State<TelaContas> {
     for(var conta in contas){
       print("\t id: " + conta['id'].toString() +
           "\n nome: " + conta['nome'] +
-          "\n valor: " + conta['valor'] +
+          "\n valor: " + conta['valor'].toString() +
           "\n data_validade: " + conta['data_validade']);
     }
   }
@@ -203,7 +206,7 @@ class _TelaContas extends State<TelaContas> {
                                       ),
                                       onChanged: (String input){
                                         setState(() {
-                                          valor_conta = input;
+                                          valor_conta = double.parse(input);
                                         });
                                       },
                                     ),
@@ -250,9 +253,10 @@ class _TelaContas extends State<TelaContas> {
                                             style: TextStyle(fontSize: 16))
                                       ),
                                       TextButton(
-                                          onPressed: (){
-                                              _salvarDadosConta(nome_conta, valor_conta, data_validade);
-                                              _criarLinha(nome_conta, valor_conta, data_validade);
+                                          onPressed: () async{
+                                              await _salvarDadosConta(nome_conta, valor_conta, data_validade);
+                                              _criarLinha(nome_conta, "R\$" + valor_conta.toString(), data_validade);
+                                              Navigator.pop(context);
                                           },
                                           style: TextButton.styleFrom(
                                             primary: Colors.orangeAccent[200],
