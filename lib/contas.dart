@@ -66,6 +66,25 @@ class _TelaContas extends State<TelaContas> {
     });
   }
 
+  void _alterarLinha(Map dados) async{
+    setState(() {
+      if (_listSelected.isNotEmpty) {
+        List<Conta> temp = [];
+        Map<String, dynamic> dadosConta = {
+          "nome" : dados['nome'],
+          "valor": dados['valor'].toString(),
+          "data_validade": dados['data_validade']
+        };
+        temp.addAll(_listSelected);
+        for (Conta conta in temp) {
+          _listaContas.remove(conta);
+          _listSelected.remove(conta);
+          _atualizarContas(conta.id, dadosConta);
+        }
+      }
+    });
+  }
+
   /*-----------------------------------MANIPULACAO DE CONTAS--------------------------------------*/
   _recuperarBancoDadosContas() async{
     final caminhoBD = await getDatabasesPath();
@@ -131,6 +150,7 @@ class _TelaContas extends State<TelaContas> {
         whereArgs: [id]
     );
     print("Conta atualizada: " + retorno.toString());
+    _listaContas.add(new Conta(dadosConta['nome'], dadosConta['data_validade'], double.parse(dadosConta['valor']), id));
   }
 
   botaoSalvarBancoContas(texto, BuildContext context, Map dadosConta){
@@ -374,8 +394,136 @@ class _TelaContas extends State<TelaContas> {
                         ),
                         TextButton(
                             onPressed: () async{
-                              await _criarLinha(nome_conta, valor_conta, data_validade);
-                              Navigator.pop(context);
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("Adicionar conta à lista: "),
+                                      content: Stack(
+                                        children: <Widget>[
+                                          Form(
+                                            key: _formKey,
+                                            child: SingleChildScrollView(
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                  Padding(
+                                                    padding: EdgeInsets.all(5.0),
+                                                    child: TextFormField(
+                                                      cursorColor: Colors.orangeAccent[200],
+                                                      style: TextStyle(color: Colors.black, decorationColor: Colors.white),
+                                                      decoration: InputDecoration(
+                                                        //prefixIcon: Icon(Icons.person, color: Colors.orangeAccent[200], size: 22),
+                                                          enabledBorder: UnderlineInputBorder(
+                                                              borderSide: BorderSide(
+                                                                  color: Colors.orangeAccent[200]
+                                                              )
+                                                          ),
+                                                          labelText: 'Conta:',
+                                                          labelStyle: TextStyle(color: Colors.black, fontSize: 18),
+                                                          focusedBorder: UnderlineInputBorder(
+                                                              borderSide: BorderSide(
+                                                                  color: Colors.orangeAccent[200]
+                                                              )
+                                                          )
+                                                      ),
+                                                      onChanged: (String input){
+                                                        setState(() {
+                                                          nome_conta = input;
+                                                        });
+                                                      },
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(5.0),
+                                                    child: TextFormField(
+                                                      cursorColor: Colors.orangeAccent[200],
+                                                      style: TextStyle(color: Colors.black, decorationColor: Colors.white),
+                                                      decoration: InputDecoration(
+                                                        //prefixIcon: Icon(Icons.person, color: Colors.orangeAccent[200], size: 22),
+                                                          enabledBorder: UnderlineInputBorder(
+                                                              borderSide: BorderSide(
+                                                                  color: Colors.orangeAccent[200]
+                                                              )
+                                                          ),
+                                                          labelText: 'Valor:',
+                                                          labelStyle: TextStyle(color: Colors.black, fontSize: 18),
+                                                          focusedBorder: UnderlineInputBorder(
+                                                              borderSide: BorderSide(
+                                                                  color: Colors.orangeAccent[200]
+                                                              )
+                                                          )
+                                                      ),
+                                                      onChanged: (String input){
+                                                        setState(() {
+                                                          valor_conta = double.parse(input);
+                                                        });
+                                                      },
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(5.0),
+                                                    child: TextFormField(
+                                                      cursorColor: Colors.orangeAccent[200],
+                                                      style: TextStyle(color: Colors.black, decorationColor: Colors.white),
+                                                      decoration: InputDecoration(
+                                                        //prefixIcon: Icon(Icons.person, color: Colors.orangeAccent[200], size: 22),
+                                                          enabledBorder: UnderlineInputBorder(
+                                                              borderSide: BorderSide(
+                                                                  color: Colors.orangeAccent[200]
+                                                              )
+                                                          ),
+                                                          labelText: 'Data de Validade:',
+                                                          labelStyle: TextStyle(color: Colors.black, fontSize: 18),
+                                                          focusedBorder: UnderlineInputBorder(
+                                                              borderSide: BorderSide(
+                                                                  color: Colors.orangeAccent[200]
+                                                              )
+                                                          )
+                                                      ),
+                                                      onChanged: (String input){
+                                                        setState(() {
+                                                          data_validade = input;
+                                                        });
+                                                      },
+                                                    ),
+                                                  ),
+                                                  Row(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                                      children: <Widget>[
+                                                        TextButton(
+                                                            onPressed: (){
+                                                              Navigator.pop(context);
+                                                            },
+                                                            style: TextButton.styleFrom(
+                                                              primary: Colors.orangeAccent[200],
+                                                            ),
+                                                            child: Text("Cancelar",
+                                                                style: TextStyle(fontSize: 16))
+                                                        ),
+                                                        TextButton(
+                                                            onPressed: () async{
+                                                              _alterarLinha({'nome':nome_conta, 'valor': valor_conta, 'data_validade':data_validade});
+                                                              Navigator.pop(context);
+                                                            },
+                                                            style: TextButton.styleFrom(
+                                                              primary: Colors.orangeAccent[200],
+                                                            ),
+                                                            child: Text("Atualizar",
+                                                                style: TextStyle(fontSize: 16))
+                                                        )
+                                                      ]
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+                              );
                             },
                             style: TextButton.styleFrom(
                               primary: Colors.orangeAccent[200],
