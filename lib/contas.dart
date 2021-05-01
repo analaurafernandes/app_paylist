@@ -2,6 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+class Conta {
+  String nome;
+  String validade;
+  double valor;
+  int id = -1;
+
+  Conta(String nome, String validade, double valor){
+    this.nome = nome;
+    this.validade = validade;
+    this.valor = valor;
+    this.id = id + 1;
+  }
+}
+
 class TelaContas extends StatefulWidget {
   @override
   _TelaContas createState() => _TelaContas();
@@ -13,35 +27,60 @@ class _TelaContas extends State<TelaContas> {
   var data_validade;
   final _formKey = GlobalKey<FormState>();
   var selecionada = false;
-  List<DataRow> _rowList = [
-    DataRow(cells: <DataCell>[
-      DataCell(Text('CEMIG')),
-      DataCell(Text('R\$100,00')),
-      DataCell(Text('30/04/2021'))
-    ],
-      selected: true,
-      onSelectChanged: (select) {
-        print("Selecionada!");
 
-      },),
-  ];
-
-  void _criarLinha(String conta, String valor, String data){
+  List<Conta> _listSelected = [];
+  List<Conta> _listaContas = [new Conta('Cemig', '10/05/2021', 400.00)];
+  //_listaContas.add(inicial);
+  void _criarLinha(String conta, double valor, String data){
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below.
-      _rowList.add(DataRow(cells: <DataCell>[
+      Conta nova = new Conta(conta, data, valor);
+      _listaContas.add(nova);
+      /*_rowList.add(DataRow(cells: <DataCell>[
         DataCell(Text(conta)),
         DataCell(Text(valor)),
         DataCell(Text(data)),
-      ]));
+      ],
+          selected: _listSelected.contains(DataRow(cells: <DataCell>[
+              DataCell(Text(conta)),
+              DataCell(Text(valor)),
+              DataCell(Text(data))])),
+          onSelectChanged: (select){
+            onSelect(select, DataRow(cells: <DataCell>[
+              DataCell(Text(conta)),
+              DataCell(Text(valor)),
+              DataCell(Text(data))]));
+      }));*/
+    });
+  }
+
+  void onSelect(bool selected, Conta conta){
+    setState(() {
+      if(selected)
+        _listSelected.add(conta);
+      else
+        _listSelected.remove(conta);
+    });
+  }
+
+  void _deletarLinha() async{
+    setState(() {
+      if (_listSelected.isNotEmpty) {
+        List<Conta> temp = [];
+        temp.addAll(_listSelected);
+        for (Conta conta in temp) {
+          _listaContas.remove(conta);
+          _listSelected.remove(conta);
+        }
+      }
     });
   }
 
   /*-----------------------------------MANIPULACAO DE CONTAS--------------------------------------*/
   _recuperarBancoDadosContas() async{
     final caminhoBD = await getDatabasesPath();
-    final localBD   = join(caminhoBD, "banco2.bd");
+    final localBD   = join(caminhoBD, "banco3.bd");
     var bd = await openDatabase(
         localBD,
         version: 1,
@@ -255,7 +294,7 @@ class _TelaContas extends State<TelaContas> {
                                       TextButton(
                                           onPressed: () async{
                                               await _salvarDadosConta(nome_conta, valor_conta, data_validade);
-                                              _criarLinha(nome_conta, "R\$" + valor_conta.toString(), data_validade);
+                                              _criarLinha(nome_conta, valor_conta, data_validade);
                                               Navigator.pop(context);
                                           },
                                           style: TextButton.styleFrom(
@@ -295,15 +334,29 @@ class _TelaContas extends State<TelaContas> {
                           scrollDirection: Axis.vertical,
                           child: DataTable(
                             columnSpacing: 30.0,
+                            showCheckboxColumn: true,
                             columns: [
                               DataColumn(label: Text('Conta')),
                               DataColumn(label: Text('Valor')),
                               DataColumn(label: Text('Vencimento'))
                             ],
-                            rows: _rowList
+                            rows: _listaContas.map(
+                                (conta) => DataRow(
+                                  selected: _listSelected.contains(conta),
+                                  onSelectChanged: (b){
+                                    print("Selecionado!");
+                                    onSelect(b, conta);
+                                  },
+                                  cells: [
+                                    DataCell(Text(conta.nome)),
+                                    DataCell(Text(conta.valor.toString())),
+                                    DataCell(Text(conta.validade))
+                                  ]
+                                )).toList()
+
+                            )
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),
