@@ -294,6 +294,7 @@ class _TelaContas extends State<TelaContas> {
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: DataTable(
+                            columnSpacing: 30.0,
                             columns: [
                               DataColumn(label: Text('Conta')),
                               DataColumn(label: Text('Valor')),
