@@ -292,7 +292,7 @@ class _TelaContas extends State<TelaContas> {
                     children: <Widget>[
                       Container(
                         child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
+                          scrollDirection: Axis.vertical,
                           child: DataTable(
                             columnSpacing: 30.0,
                             columns: [
