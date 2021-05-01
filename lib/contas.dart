@@ -276,25 +276,35 @@ class _TelaContas extends State<TelaContas> {
         body: new Stack(
           children: <Widget>[
             new Container(
-                decoration: new BoxDecoration(
-                    image: new DecorationImage(
-                        image: AssetImage(
-                            'assets/images/background_clean.png'),
-                        fit: BoxFit.cover)),
+              decoration: new BoxDecoration(
+              image: new DecorationImage(
+                image: AssetImage(
+                    'assets/images/background_clean.png'),
+                fit: BoxFit.cover)),
               child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 64, 20, 20),
-                child: DataTable(
-                    columns: [
-                      DataColumn(label: Text('Conta')),
-                      DataColumn(label: Text('Valor')),
-                      DataColumn(label: Text('Vencimento'))
+                padding: EdgeInsets.fromLTRB(0, 90, 0, 0),
+                child:Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Container(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: DataTable(
+                            columns: [
+                              DataColumn(label: Text('Conta')),
+                              DataColumn(label: Text('Valor')),
+                              DataColumn(label: Text('Vencimento'))
+                            ],
+                            rows: _rowList
+                          ),
+                        ),
+                      ),
                     ],
-                    rows: _rowList
+                  ),
                 ),
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }
