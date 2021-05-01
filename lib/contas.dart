@@ -38,21 +38,7 @@ class _TelaContas extends State<TelaContas> {
       // changed in this State, which causes it to rerun the build method below.
       Conta nova = new Conta(conta, data, valor, id);
       _listaContas.add(nova);
-      /*_rowList.add(DataRow(cells: <DataCell>[
-        DataCell(Text(conta)),
-        DataCell(Text(valor)),
-        DataCell(Text(data)),
-      ],
-          selected: _listSelected.contains(DataRow(cells: <DataCell>[
-              DataCell(Text(conta)),
-              DataCell(Text(valor)),
-              DataCell(Text(data))])),
-          onSelectChanged: (select){
-            onSelect(select, DataRow(cells: <DataCell>[
-              DataCell(Text(conta)),
-              DataCell(Text(valor)),
-              DataCell(Text(data))]));
-      }));*/
+
     });
   }
 
@@ -71,7 +57,7 @@ class _TelaContas extends State<TelaContas> {
       if (_listSelected.isNotEmpty) {
         List<Conta> temp = [];
         temp.addAll(_listSelected);
-        for (Conta conta in temp) {
+         for (Conta conta in temp) {
           _listaContas.remove(conta);
           _listSelected.remove(conta);
           _excluirConta(conta.id);
@@ -114,12 +100,17 @@ class _TelaContas extends State<TelaContas> {
     Database bd = await _recuperarBancoDadosContas();
     String sql = "select * from contas";
     List contas = await bd.rawQuery(sql);
-    for(var conta in contas){
-      print("\t id: " + conta['id'].toString() +
-          "\n nome: " + conta['nome'] +
-          "\n valor: " + conta['valor'].toString() +
-          "\n data_validade: " + conta['data_validade']);
-    }
+    List<Conta> lista_contas = [];
+    setState(() {
+      for (var conta in contas) {
+        lista_contas.add(new Conta(conta['nome'], conta['data_validade'], conta['valor'], conta['id']));
+        print("\t id: " + conta['id'].toString() +
+            "\n nome: " + conta['nome'] +
+            "\n valor: " + conta['valor'].toString() +
+            "\n data_validade: " + conta['data_validade']);
+      }
+    });
+    return lista_contas;
   }
 
   _excluirConta(int id) async{
@@ -364,8 +355,40 @@ class _TelaContas extends State<TelaContas> {
                   ),
                 ),
               ),
-            ],
-          ),
-    );
+              Expanded(
+                  child: Align(
+                    alignment: FractionalOffset.bottomCenter,
+                    child:Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        TextButton(
+                            onPressed: (){
+                               _deletarLinha();
+                            },
+                            style: TextButton.styleFrom(
+                              primary: Colors.orangeAccent[200],
+                            ),
+                            child: Text("Deletar",
+                                style: TextStyle(fontSize: 16))
+                        ),
+                        TextButton(
+                            onPressed: () async{
+                              await _criarLinha(nome_conta, valor_conta, data_validade);
+                              Navigator.pop(context);
+                            },
+                            style: TextButton.styleFrom(
+                              primary: Colors.orangeAccent[200],
+                            ),
+                            child: Text("Alterar",
+                                style: TextStyle(fontSize: 16))
+                        )
+                      ]
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
   }
 }
