@@ -286,7 +286,7 @@ class _TelaContas extends State<TelaContas> {
                     'assets/images/background_clean.png'),
                 fit: BoxFit.cover)),
               child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 90, 0, 0),
+                padding: EdgeInsets.fromLTRB(0, 100, 0, 0),
                 child:Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
